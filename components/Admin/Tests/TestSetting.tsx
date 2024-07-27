@@ -1,86 +1,66 @@
 "use client";
-import ToggleSwitch from "@components/ToggleSwitch";
-import React, { useState } from "react";
-import { AiFillCalculator } from "react-icons/ai";
-import { BsFillWebcamFill } from "react-icons/bs";
-import { CiCircleMinus } from "react-icons/ci";
-import {
-  FiClock,
-  FiList,
-  FiLock,
-  FiSave,
-  FiShuffle,
-  FiToggleLeft,
-} from "react-icons/fi";
-import { MdOutlinePublish } from "react-icons/md";
+import React, { useCallback, useEffect, useState } from "react";
+import { TEST_OPTIONS } from "@constants/defaultValues";
+import { Switch } from "antd";
 
-const options = [
-  { icon: FiLock, label: "Lock Browser", type: "toggle" },
-  { icon: BsFillWebcamFill, label: "Webcam", type: "toggle" },
-  { icon: FiShuffle, label: "Shuffle Questions", type: "toggle" },
-  { icon: FiList, label: "No of Questions per Page", type: "number" },
-  { icon: CiCircleMinus, label: "Negative Marking", type: "toggle" },
-  { icon: AiFillCalculator, label: "Enable Calculator", type: "toggle" },
-  { icon: FiSave, label: "Auto-Save Answers", type: "toggle" },
-  { icon: FiToggleLeft, label: "Switch between answers", type: "toggle" },
-  { icon: FiClock, label: "Grace Time (min)", type: "number" },
-  {
-    icon: MdOutlinePublish,
-    label: "Publish Grades after Submission",
-    type: "toggle",
-  },
-];
-
-const TestSetting = () => {
+const TestSetting = ({ setTestSettings }: any) => {
   const [switchStates, setSwitchStates] = useState(
-    options.reduce((acc: any, option) => {
-      acc[option.label] = false;
+    TEST_OPTIONS.reduce((acc: any, option) => {
+      acc[option.key] = false;
       return acc;
     }, {})
   );
 
   const [inputValues, setInputValues] = useState(
-    options.reduce((acc: any, option) => {
+    TEST_OPTIONS.reduce((acc: any, option) => {
       if (option.type === "number") {
-        acc[option.label] = "";
+        acc[option.key] = "";
       }
       return acc;
     }, {})
   );
 
-  const handleToggle = (label: string) => {
+  const handleToggle = useCallback((key: string) => {
     setSwitchStates((prevState: any) => ({
       ...prevState,
-      [label]: !prevState[label],
+      [key]: !prevState[key],
     }));
-  };
+  }, []);
 
-  const handleInputChange = (label: string, value: any) => {
+  const handleInputChange = useCallback((key: string, value: any) => {
     setInputValues((prevState: any) => ({
       ...prevState,
-      [label]: value,
+      [key]: value,
     }));
-  };
+  }, []);
+
+  useEffect(() => {
+    setTestSettings((prev: any) => ({
+      ...prev,
+      switchStates,
+      inputValues,
+    }));
+  }, [switchStates, inputValues]);
 
   return (
-    <div className="p-5 border rounded w-1/2">
-      <h1 className="text-lg font-semibold mb-4">Test Setting</h1>
+    <div className="p-5 border rounded w-1/2 shadow">
+      <h1 className="text-lg font-semibold mb-4">Test Settings</h1>
       <ul className="list-none p-0">
-        {options.map(({ icon: Icon, label, type }) => (
-          <li key={label} className="flex items-center mb-4">
+        {TEST_OPTIONS.map(({ icon: Icon, label, type, key }) => (
+          <li key={key} className="flex items-center mb-4">
             <Icon className="mr-2" />
             <span className="flex-grow">{label}</span>
             {type === "toggle" ? (
-              <ToggleSwitch
-                isOn={switchStates[label]}
-                onToggle={() => handleToggle(label)}
+              <Switch
+                checked={switchStates[key]}
+                onChange={() => handleToggle(key)}
               />
             ) : (
               <div className="flex items-center ml-auto">
                 <input
                   type="number"
-                  value={inputValues[label]}
-                  onChange={(e) => handleInputChange(label, e.target.value)}
+                  value={inputValues[key]}
+                  onChange={(e) => handleInputChange(key, e.target.value)}
                   className="w-12 p-1 border rounded"
                 />
               </div>

@@ -1,13 +1,37 @@
 "use client";
-import Table from "@components/Table";
-import React from "react";
+import ConfirmationModal from "@components/Modal/ConfirmationModal";
+import Table from "@components/Table/Table";
+import useApi from "@hooks/useApi";
+import { TEST_API } from "@utils/endpoints";
+import { Spin } from "antd";
+import { useRouter } from "next/navigation";
+import React, { useCallback, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const TestsTable = () => {
+  const router = useRouter();
+  const { apiCall, error, loading } = useApi();
+  const [tests, setTests] = useState<any[]>([]);
+  const [showModal, setShowModal] = useState<boolean>(false);
+
+  const fetchTests = async () => {
+    try {
+      const res: any = await apiCall.get(TEST_API);
+      setTests(res.data.tests);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTests();
+  }, []);
+
   const columns = [
     {
       title: "Test Name",
-      dataIndex: "testName",
-      key: "testName",
+      dataIndex: "name",
+      key: "name",
     },
     {
       title: "Test Date",
@@ -16,8 +40,8 @@ const TestsTable = () => {
     },
     {
       title: "Test Duration",
-      dataIndex: "testDuration",
-      key: "testDuration",
+      dataIndex: "duration",
+      key: "duration",
     },
     {
       title: "Attempts",
@@ -31,13 +55,13 @@ const TestsTable = () => {
     },
     {
       title: "Browser Lock",
-      dataIndex: "browserLock",
-      key: "browserLock",
+      dataIndex: "browserLocked",
+      key: "browserLocked",
     },
     {
       title: "Webcam",
-      dataIndex: "webcam",
-      key: "webcam",
+      dataIndex: "webCam",
+      key: "webCam",
     },
     {
       title: "Shuffle Questions",
@@ -46,8 +70,8 @@ const TestsTable = () => {
     },
     {
       title: "No of Questions",
-      dataIndex: "noOfQuestions",
-      key: "noOfQuestions",
+      dataIndex: "noOfQuestionsPerPage",
+      key: "noOfQuestionsPerPage",
     },
     {
       title: "Negative Marking",
@@ -56,13 +80,13 @@ const TestsTable = () => {
     },
     {
       title: "Enable Calculator",
-      dataIndex: "enableCalculator",
-      key: "enableCalculator",
+      dataIndex: "calculator",
+      key: "calculator",
     },
     {
       title: "Auto Submit",
-      dataIndex: "autoSubmit",
-      key: "autoSubmit",
+      dataIndex: "autoSave",
+      key: "autoSave",
     },
     {
       title: "Grace Time",
@@ -76,80 +100,74 @@ const TestsTable = () => {
     },
   ];
 
-  const data = [
-    {
-      testName: "Test 1",
-      testDate: "12/12/2021",
-      testDuration: "30",
-      attempts: "2",
-      totalQuestions: "10",
-      browserLock: "Yes",
-      webcam: "Yes",
-      shuffleQuestions: "Yes",
-      noOfQuestions: "10",
-      negativeMarking: "Yes",
-      enableCalculator: "Yes",
-      autoSubmit: "Yes",
-      graceTime: "5",
-      showResult: "Yes",
+  const booleanTextMap = {
+    browserLocked: {
+      trueText: "Yes",
+      falseText: "No",
     },
-    {
-      testName: "Test 2",
-      testDate: "12/12/2021",
-      testDuration: "30",
-      attempts: "2",
-      totalQuestions: "10",
-      browserLock: "Yes",
-      webcam: "Yes",
-      shuffleQuestions: "Yes",
-      noOfQuestions: "10",
-      negativeMarking: "Yes",
-      enableCalculator: "Yes",
-      autoSubmit: "Yes",
-      graceTime: "5",
-      showResult: "Yes",
+    webCam: {
+      trueText: "Yes",
+      falseText: "No",
     },
-    {
-      testName: "Test 3",
-      testDate: "12/12/2021",
-      testDuration: "30",
-      attempts: "2",
-      totalQuestions: "10",
-      browserLock: "Yes",
-      webcam: "Yes",
-      shuffleQuestions: "Yes",
-      noOfQuestions: "10",
-      negativeMarking: "Yes",
-      enableCalculator: "Yes",
-      autoSubmit: "Yes",
-      graceTime: "5",
-      showResult: "Yes",
+    shuffleQuestions: {
+      trueText: "Yes",
+      falseText: "No",
     },
-    {
-      testName: "Test 4",
-      testDate: "12/12/2021",
-      testDuration: "30",
-      attempts: "2",
-      totalQuestions: "10",
-      browserLock: "Yes",
-      webcam: "Yes",
-      shuffleQuestions: "Yes",
-      noOfQuestions: "10",
-      negativeMarking: "Yes",
-      enableCalculator: "Yes",
-      autoSubmit: "Yes",
-      graceTime: "5",
-      showResult: "Yes",
+    negativeMarking: {
+      trueText: "Yes",
+      falseText: "No",
     },
-  ];
+    calculator: {
+      trueText: "Yes",
+      falseText: "No",
+    },
+    autoSave: {
+      trueText: "Yes",
+      falseText: "No",
+    },
+    showResult: {
+      trueText: "Yes",
+      falseText: "No",
+    },
+  };
+
+  const handleActionClick = useCallback(async (action: string, record: any) => {
+    if (action === "edit") {
+      router.push(`/tests/${record._id}`);
+    } else if (action === "delete") {
+      setShowModal(true);
+    }
+  }, []);
+
+  const handleDelete = async () => {
+    setShowModal(false);
+    await apiCall.delete(`${TEST_API}/${tests[0]._id}`);
+    toast.success("Test deleted successfully");
+    fetchTests();
+  };
+
+  if (loading) {
+    return <Spin fullscreen size="large" />;
+  }
 
   return (
-    <Table
-      columns={columns}
-      data={data}
-      headerFixed={true}
-      rowHoverEffect={true}
-    />
+    <div className="flex flex-row justify-between gap-4 w-full">
+      <Table
+        columns={columns}
+        data={tests}
+        headerFixed={true}
+        rowHoverEffect={true}
+        booleanTextMap={booleanTextMap}
+        dateColumns={["testDate"]}
+        actionColumn={["edit", "delete"]}
+        onActionClick={handleActionClick}
+      />
+      <ConfirmationModal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        onConfirm={handleDelete}
+      />
+    </div>
   );
 };
 

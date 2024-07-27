@@ -10,6 +10,7 @@ type ImageWrapperProps = {
   width?: number;
   divStyle?: string;
   className?: string;
+  handleImageClick?: () => void;
 };
 
 const ImageWrapper = ({
@@ -20,6 +21,7 @@ const ImageWrapper = ({
   width,
   divStyle,
   className,
+  handleImageClick,
 }: ImageWrapperProps) => {
   const handleError = useCallback(
     (e: any) => {
@@ -36,6 +38,7 @@ const ImageWrapper = ({
         height={height}
         width={width}
         className={className}
+        onClick={handleImageClick}
       />
     </div>
   );

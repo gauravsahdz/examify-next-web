@@ -1,8 +1,8 @@
 "use client";
-import Button from "@components/Button";
 import React from "react";
 import { Logo } from "@assets/icons";
 import { useRouter } from "next/navigation";
+import { Button } from "antd";
 
 const Navbar = () => {
   const router = useRouter();
@@ -17,23 +17,25 @@ const Navbar = () => {
       </div>
 
       <ul className="hidden sm:flex flex-row items-center gap-6 text-lgtext-gray-900">
-        <li
-          className="hover:text-brand-primary cursor-pointer"
+        <Button
+          type="text"
           onClick={() => {
             router.push("/login");
           }}
         >
           Log in
-        </li>
+        </Button>
 
         <li>
           <Button
-            btnText="Sign up"
-            variant="outline"
-            handleClick={() => {
+            type="primary"
+            ghost
+            onClick={() => {
               router.push("/signup");
             }}
-          />
+          >
+            Sign up
+          </Button>
         </li>
       </ul>
     </header>

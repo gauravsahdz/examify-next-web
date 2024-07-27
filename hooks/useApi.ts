@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import axios, { AxiosRequestConfig, AxiosResponse, AxiosError } from "axios";
 
+const API_URL = process.env.API_BASE_URL;
 interface UseApiResult {
   apiCall: {
     get: <T>(endpoint: string, params?: object) => Promise<T>;
@@ -27,12 +28,17 @@ const useApi = (): UseApiResult => {
       setLoading(true);
       setError(null);
 
+      const token = localStorage.getItem("token");
+
       try {
         const response: AxiosResponse<T> = await axios({
           method,
-          url: endpoint,
+          url: `${API_URL}${endpoint}`,
           data,
           params,
+          headers: {
+            Authorization: token ? `Bearer ${token}` : undefined,
+          },
         });
         setLoading(false);
         return response.data;

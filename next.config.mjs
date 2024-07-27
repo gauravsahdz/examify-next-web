@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  env: {
+    API_BASE_URL: process.env.API_BASE_URL,
+  },
   webpack(config) {
     config.module.rules.push({
       test: /\.svg$/,
@@ -10,7 +13,7 @@ const nextConfig = {
   },
   reactStrictMode: true,
   images: {
-    domains: ["via.placeholder.com"],
+    domains: ["via.placeholder.com", "img.freepik.com"],
   },
   async headers() {
     return [

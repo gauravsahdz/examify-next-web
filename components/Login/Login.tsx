@@ -1,10 +1,49 @@
-import React from "react";
+"use client";
+import React, { useCallback, useState } from "react";
 import ImageWrapper from "@components/ImageWrapper";
+import useApi from "@hooks/useApi";
+import { HttpStatusCode } from "axios";
+import { useRouter } from "next/navigation";
+import { useAppContext } from "@contexts/AppContext";
+import { LOGIN_API } from "@utils/endpoints";
+import { Button, Checkbox, Col, Flex, Form, Input, Row, Space } from "antd";
+import { FiLock, FiUser } from "react-icons/fi";
 
 const Login = () => {
+  const router = useRouter();
+  const { apiCall, error, loading } = useApi();
+  const { setUser } = useAppContext();
+
+  const [loginData, setLoginData] = useState<Record<string, string>>({
+    email: "",
+    password: "",
+  });
+
+  const handleLogin = useCallback(async () => {
+    try {
+      const res: {
+        status: HttpStatusCode;
+        token: string;
+        data: any;
+      } = await apiCall.post(LOGIN_API, loginData);
+      if (res.status === HttpStatusCode.Ok) {
+        localStorage.setItem("token", res.token);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+        setUser(res.data.user);
+        if (res.data.user.role === "admin") {
+          router.push("/dashboard");
+        } else {
+          router.push("/");
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }, [apiCall, loginData, setUser, router]);
+
   return (
-    <div className="flex flex-col md:flex-row items-center justify-center h-screen">
-      <div className="md:w-1/2">
+    <Flex justify="space-between" align="center" style={{ height: "100vh" }}>
+      <Col span={12}>
         <ImageWrapper
           src="/assets/images/signup.png"
           alt="signup-image"
@@ -13,39 +52,71 @@ const Login = () => {
           width={800}
           height={800}
         />
-      </div>
-      <div className="md:w-1/2 flex flex-col justify-center items-center p-4 max-w-lg">
+      </Col>
+      <Col span={12}>
         <h1 className="text-4xl font-bold mb-6">Login</h1>
-        <form className="w-full max-w-sm">
-          <div className="mb-4">
-            <input
-              type="email"
+        <Form
+          name="normal_login"
+          className="login-form"
+          initialValues={{ remember: true }}
+          onFinish={handleLogin}
+        >
+          <Form.Item
+            name="email"
+            rules={[{ required: true, message: "Please input your Email!" }]}
+          >
+            <Input
+              prefix={<FiUser className="site-form-item-icon" />}
               placeholder="Email"
-              className="p-3 bg-gray-100 rounded-lg w-full focus:outline-brand-accent focus:bg-white"
+              name="email"
+              onChange={(e) =>
+                setLoginData({
+                  ...loginData,
+                  email: e.target.value,
+                })
+              }
             />
-          </div>
-          <div className="mb-2">
-            <input
+          </Form.Item>
+          <Form.Item
+            name="password"
+            rules={[{ required: true, message: "Please input your Password!" }]}
+          >
+            <Input
+              prefix={<FiLock className="site-form-item-icon" />}
               type="password"
               placeholder="Password"
-              className="p-3 bg-gray-100 rounded-lg w-full focus:outline-brand-accent focus:bg-white"
+              name="password"
+              onChange={(e) =>
+                setLoginData({
+                  ...loginData,
+                  password: e.target.value,
+                })
+              }
             />
-          </div>
-          <p className="text-blue-500 hover:underline mb-2 cursor-pointer">
-            Forgot password?
-          </p>
-          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg w-full transition duration-300 ease-in-out">
-            Login
-          </button>
-          <p className="mt-4">
-            Don&apos;t have an account?{" "}
-            <a href="/signup" className="text-blue-500 hover:underline">
-              Sign up
+          </Form.Item>
+          <Form.Item>
+            <Form.Item name="remember" valuePropName="checked" noStyle>
+              <Checkbox>Remember me</Checkbox>
+            </Form.Item>
+
+            <a className="login-form-forgot" href="">
+              Forgot password
             </a>
-          </p>
-        </form>
-      </div>
-    </div>
+          </Form.Item>
+
+          <Form.Item>
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="login-form-button"
+            >
+              Log in
+            </Button>
+            Or <a href="">register now!</a>
+          </Form.Item>
+        </Form>
+      </Col>
+    </Flex>
   );
 };
 

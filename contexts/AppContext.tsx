@@ -1,10 +1,20 @@
 "use client";
-import React, { createContext, useState, useContext, ReactNode } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  useEffect,
+} from "react";
 
 interface User {
-  id: number;
-  name: string;
+  _id: number;
+  firstName: string;
+  lastName: string;
+  userName: string;
   email: string;
+  photo: string;
+  createdAt: string;
 }
 
 interface AppContextType {
@@ -20,6 +30,13 @@ interface AppProviderProps {
 
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      setUser(JSON.parse(user));
+    }
+  }, []);
 
   return (
     <AppContext.Provider value={{ user, setUser }}>

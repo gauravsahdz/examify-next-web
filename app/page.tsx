@@ -1,25 +1,24 @@
 import ImageWrapper from "@components/ImageWrapper";
-import Button from "@components/Button";
-import StatsCard from "@components/Card/StatsCard";
 import { ClockIcon, ApartmentIcon, PcIcon } from "@assets/icons";
 import Navbar from "@components/Navbar/Navbar";
 import Footer from "@components/Footer/Footer";
+import { Button, Card, Statistic } from "antd";
 
 const statsData = [
   {
     value: "10+",
     description: "Languages available in integrated IDE",
-    icon: <PcIcon />,
+    icon: <PcIcon height={30} width={30} />,
   },
   {
     value: 75,
     description: "Companies and Institutions using Examify",
-    icon: <ApartmentIcon />,
+    icon: <ApartmentIcon height={30} width={30} />,
   },
   {
     value: "1",
     description: "Hour to finish test and get results immediately",
-    icon: <ClockIcon />,
+    icon: <ClockIcon height={30} width={30} />,
   },
 ];
 
@@ -30,11 +29,9 @@ export default function Home() {
       <div className="flex flex-col p-4 gap-8 sm:gap-16 p-4 sm:p-8">
         <div className="flex flex-row justify-center sm:gap-16">
           <div className="flex flex-col justify-center gap-6 p-2  max-w-xl">
-            <Button
-              btnText="Get Started"
-              variant="outline"
-              btnStyle="rounded-full text-sm mr-40 sm:mr-80"
-            />
+            <Button type="primary" ghost shape="round">
+              Get started
+            </Button>
             <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 leading-tight">
               Test your coding knowledge level and get recognized in different
               MNCs with <span className="text-brand-primary">Examify</span>
@@ -43,8 +40,8 @@ export default function Home() {
               Your one-stop solution for setting up online exams and quizzes.
             </p>
             <div className="flex flex-row gap-4">
-              <Button btnText="Learn more" variant="outline" />
-              <Button btnText="Take demo" variant="primary" />
+              <Button shape="round">Learn more</Button>
+              <Button shape="round">Take demo</Button>
             </div>
           </div>
           <div className="hidden sm:flex items-center justify-center rounded-full bg-brand-accent  max-w-xl">
@@ -60,12 +57,13 @@ export default function Home() {
         </div>
         <div className="flex flex-wrap sm:flex-row justify-center gap-2 sm:gap-8">
           {statsData.map((data, index) => (
-            <StatsCard
-              key={index}
-              value={data.value}
-              description={data.description}
-              icon={data.icon}
-            />
+            <Card key={index} bordered={false}>
+              <Statistic
+                title={data.description}
+                value={data.value}
+                prefix={data.icon}
+              />
+            </Card>
           ))}
         </div>
         <div className="flex flex-row justify-center gap-16">

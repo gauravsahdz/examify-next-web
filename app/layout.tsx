@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import { AppProvider } from "../contexts/AppContext";
+import { AppProvider } from "@contexts/AppContext";
+import { Toaster } from "react-hot-toast";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
 
 const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
@@ -23,7 +25,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${poppins.variable} poppins`}>
-        <AppProvider>{children}</AppProvider>
+        <AntdRegistry>
+          <AppProvider>
+            <Toaster />
+            {children}
+          </AppProvider>
+        </AntdRegistry>
       </body>
     </html>
   );

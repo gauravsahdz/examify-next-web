@@ -1,13 +1,24 @@
 import Navbar from "@components/Admin/Navbar/Navbar";
 import Sidebar from "@components/Admin/Sidebar/Sidebar";
 import React from "react";
-import { FiSettings, FiFileText, FiList, FiGrid } from "react-icons/fi";
+import {
+  FiSettings,
+  FiFileText,
+  FiList,
+  FiGrid,
+  FiUsers,
+} from "react-icons/fi";
 
 const adminItems = [
   {
     name: "Dashboard",
     path: "/dashboard",
     icon: <FiGrid />,
+  },
+  {
+    name: "Users",
+    path: "/users",
+    icon: <FiUsers />,
   },
   {
     name: "Questions",
@@ -33,8 +44,10 @@ export default function AdminLayout({
 }) {
   return (
     <div className="flex h-screen">
-      <Sidebar items={adminItems} />
-      <div className="flex-grow p-4 overflow-auto">
+      <div className="w-64">
+        <Sidebar items={adminItems} />
+      </div>
+      <div className="flex-grow px-4 overflow-auto">
         <Navbar />
         {children}
       </div>
